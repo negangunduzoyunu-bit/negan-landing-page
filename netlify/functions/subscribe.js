@@ -35,7 +35,7 @@ exports.handler = async function (event, context) {
       };
     }
 
-    const publicationId = "c72ecc0d-163c-49f3-adc0-38088883eb92";
+    const publicationId = "pub_c72ecc0d-163c-49f3-adc0-38088883eb92";
     // API Key falls back securely to your credential if environment variable is not defined
     const apiKey = process.env.BEEHIIV_API_KEY || "tQzK84jZI3Xn2ccdwRnKypuFK8ndmw0yMTllE7hKaN15pcwcBq9J1ipMhsRlzY6x";
 
