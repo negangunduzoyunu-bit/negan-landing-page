@@ -34,8 +34,8 @@ exports.handler = async function (event, context) {
       };
     }
 
-    const MAUTIC_URL = "https://mautic.negangunduzoyunu.net";
-    const FORM_ID = 1; // KİTAP FORMU'nun ID'si — Mautic'te farklıysa burayı değiştir
+    const MAUTIC_URL = "https://mautic-negan-u76167.vm.elestio.app";
+    const FORM_ID = 1; // KİTAP FORMU'nun ID'si
 
     const formData = new URLSearchParams();
     formData.append("mauticform[email]", email);
