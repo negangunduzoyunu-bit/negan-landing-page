@@ -1,9 +1,9 @@
 /**
- * Netlify Serverless Backend Function for Beehiiv API integration.
- * Securely communicates with Beehiiv without exposing credentials to the client/browser.
+ * Netlify Serverless Function — Mautic form entegrasyonu.
+ * Formdan gelen maili Mautic'e iletir (KİTAP FORMU, formId=1).
  */
 exports.handler = async function (event, context) {
-  // CORS Preflight handles (OPTIONS request handling)
+  // CORS preflight
   if (event.httpMethod === "OPTIONS") {
     return {
       statusCode: 200,
@@ -16,7 +16,6 @@ exports.handler = async function (event, context) {
     };
   }
 
-  // Only allow POST requests for subscription creation
   if (event.httpMethod !== "POST") {
     return {
       statusCode: 405,
@@ -35,54 +34,41 @@ exports.handler = async function (event, context) {
       };
     }
 
-    const publicationId = "pub_c72ecc0d-163c-49f3-adc0-38088883eb92";
-    // API Key falls back securely to your credential if environment variable is not defined
-    const apiKey = process.env.BEEHIIV_API_KEY || "tQzK84jZI3Xn2ccdwRnKypuFK8ndmw0yMTllE7hKaN15pcwcBq9J1ipMhsRlzY6x";
+    const MAUTIC_URL = "https://mautic.negangunduzoyunu.net";
+    const FORM_ID = 1; // KİTAP FORMU'nun ID'si — Mautic'te farklıysa burayı değiştir
 
-    const beehiivUrl = `https://api.beehiiv.com/v2/publications/${publicationId}/subscriptions`;
+    const formData = new URLSearchParams();
+    formData.append("mauticform[email]", email);
+    formData.append("mauticform[formId]", FORM_ID);
+    formData.append("mauticform[return]", "");
+    formData.append("mauticform[formName]", "kitapformu");
 
-    // Native node fetch (supported in Node.js 18+ runtime inside Netlify environment)
-    const response = await fetch(beehiivUrl, {
+    const response = await fetch(`${MAUTIC_URL}/form/submit?formId=${FORM_ID}`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`
+        "Content-Type": "application/x-www-form-urlencoded",
+        "X-Requested-With": "XMLHttpRequest",
       },
-      body: JSON.stringify({
-        email: email,
-        double_opt_override: "on", // Forces double opt-in validation mail
-        reactivate_existing: true, // Allows unsubscribed users to knowingly opt-in again
-        send_welcome_email: true,  // Automatically sends configured preset welcome templates
-        utm_source: "negan_landing_page",
-        utm_medium: "organic"
-      })
+      body: formData.toString(),
     });
 
-    const data = await response.json();
-
     if (!response.ok) {
-      console.error("Beehiiv API Error Response:", data);
-      
-      let errorMessage = "Beehiiv servisine abone olunurken bir hata oluştu.";
-      if (data.errors && data.errors[0] && data.errors[0].message) {
-        errorMessage = data.errors[0].message;
-      }
-
+      console.error("Mautic yanıt kodu:", response.status);
       return {
-        statusCode: response.status,
+        statusCode: 502,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ error: errorMessage }),
+        body: JSON.stringify({ error: "Kayıt sırasında bir hata oluştu, tekrar dene." }),
       };
     }
 
     return {
       statusCode: 200,
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ success: true, data: data }),
+      body: JSON.stringify({ success: true }),
     };
 
   } catch (error) {
-    console.error("Serverless Function Internal Runtime Error:", error);
+    console.error("Serverless Function Hatası:", error);
     return {
       statusCode: 500,
       headers: { "Content-Type": "application/json" },
