@@ -954,20 +954,33 @@
                 submitBtn.textContent = 'Gönderiliyor...';
 
                 try {
-                    const response = await fetch('/.netlify/functions/subscribe', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ email: email })
-                    });
+                   const emailOctopusForm = document.querySelector(
+    '#emailOctopusHiddenForm form'
+);
 
-                    if (response.ok) {
-                        modal.classList.add('active');
-                    } else {
-                        const errorData = await response.json().catch(() => ({}));
-                        throw new Error(errorData.message || 'Bir hata oluştu. Lütfen tekrar deneyin.');
-                    }
+if (!emailOctopusForm) {
+    throw new Error('Form henüz yüklenmedi. 3 saniye sonra tekrar dene.');
+}
+
+const emailOctopusInput = emailOctopusForm.querySelector(
+    'input[name="field_0"]'
+);
+
+if (!emailOctopusInput) {
+    throw new Error('E-posta alanı bulunamadı.');
+}
+
+emailOctopusInput.value = email;
+emailOctopusInput.dispatchEvent(
+    new Event('input', { bubbles: true })
+);
+emailOctopusInput.dispatchEvent(
+    new Event('change', { bubbles: true })
+);
+
+emailOctopusForm.requestSubmit();
+
+modal.classList.add('active');
                 } catch (error) {
                     alert(error.message);
                 } finally {
@@ -989,5 +1002,12 @@
             });
         });
     </script>
+    <div id="emailOctopusHiddenForm" style="display:none;">
+    <script
+        async
+        src="https://eomail5.com/form/aca3624e-86ee-11f1-8ee2-b5261cd40863.js"
+        data-form="aca3624e-86ee-11f1-8ee2-b5261cd40863">
+    </script>
+</div>
 </body>
 </html>
