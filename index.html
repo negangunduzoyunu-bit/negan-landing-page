@@ -978,7 +978,15 @@ emailOctopusInput.dispatchEvent(
     new Event('change', { bubbles: true })
 );
 
-emailOctopusForm.requestSubmit();
+const emailOctopusSubmit = emailOctopusForm.querySelector(
+    'button[type="submit"], input[type="submit"]'
+);
+
+if (!emailOctopusSubmit) {
+    throw new Error('EmailOctopus gönder butonu bulunamadı.');
+}
+
+emailOctopusSubmit.click();
 
 modal.classList.add('active');
                 } catch (error) {
