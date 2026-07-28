@@ -978,15 +978,7 @@ emailOctopusInput.dispatchEvent(
     new Event('change', { bubbles: true })
 );
 
-const emailOctopusSubmit = emailOctopusForm.querySelector(
-    'button[type="submit"], input[type="submit"]'
-);
-
-if (!emailOctopusSubmit) {
-    throw new Error('EmailOctopus gönder butonu bulunamadı.');
-}
-
-emailOctopusSubmit.click();
+emailOctopusForm.requestSubmit();
 
 modal.classList.add('active');
                 } catch (error) {
@@ -1010,7 +1002,7 @@ modal.classList.add('active');
             });
         });
     </script>
-<div id="emailOctopusHiddenForm" style="position:absolute; left:-10000px; width:1px; height:1px; overflow:hidden;">
+<div id="emailOctopusHiddenForm" style="display:none;">
     <script
         async
         src="https://eomail5.com/form/aca3624e-86ee-11f1-8ee2-b5261cd40863.js"
