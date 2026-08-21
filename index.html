@@ -978,77 +978,35 @@
             <button class="modal-btn" id="closeModal">Anlaşıldı</button>
         </div>
     </div>
-
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const form = document.getElementById('leadForm');
-            const modal = document.getElementById('successModal');
-            const closeModal = document.getElementById('closeModal');
-            const emailInput = document.getElementById('emailInput');
-            const submitBtn = form.querySelector('button[type="submit"]');
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('successModal');
+    const closeModal = document.getElementById('closeModal');
 
-            emailInput.addEventListener('input', () => {
-                emailInput.value = emailInput.value.replace(/\s/g, '');
-            });
+    const waitForForm = setInterval(() => {
+        const form = document.querySelector('#emailOctopusForm form.emailoctopus-form');
 
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                
-                const email = emailInput.value.trim();
-                if (!email) return;
+        if (!form) return;
 
-                submitBtn.disabled = true;
-                const originalBtnText = submitBtn.textContent;
-                submitBtn.textContent = 'Gönderiliyor...';
+        clearInterval(waitForForm);
 
-                try {
-                   const emailOctopusForm = document.querySelector(
-    '#emailOctopusHiddenForm form'
-);
-
-if (!emailOctopusForm) {
-    throw new Error('Form henüz yüklenmedi. 3 saniye sonra tekrar dene.');
-}
-
-const emailOctopusInput = emailOctopusForm.querySelector(
-    'input[name="field_0"]'
-);
-
-if (!emailOctopusInput) {
-    throw new Error('E-posta alanı bulunamadı.');
-}
-
-emailOctopusInput.value = email;
-emailOctopusInput.dispatchEvent(
-    new Event('input', { bubbles: true })
-);
-emailOctopusInput.dispatchEvent(
-    new Event('change', { bubbles: true })
-);
-
-emailOctopusForm.requestSubmit();
-
-modal.classList.add('active');
-                } catch (error) {
-                    alert(error.message);
-                } finally {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = originalBtnText;
-                }
-            });
-
-            closeModal.addEventListener('click', () => {
-                modal.classList.remove('active');
-                form.reset();
-            });
-
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    modal.classList.remove('active');
-                    form.reset();
-                }
-            });
+        form.addEventListener('submit', () => {
+            setTimeout(() => {
+                modal.classList.add('active');
+            }, 500);
         });
-    </script>
+    }, 100);
+
+    closeModal.addEventListener('click', () => {
+        modal.classList.remove('active');
+    });
+
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('active');
+        }
+    });
+});
+</script>
 </body>
 </html>
