@@ -978,16 +978,40 @@
             <button class="modal-btn" id="closeModal">Anlaşıldı</button>
         </div>
     </div>
-    <script>
+<script>
 document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('successModal');
     const closeModal = document.getElementById('closeModal');
     const formArea = document.getElementById('emailOctopusForm');
 
-    const observer = new MutationObserver(() => {
-        const successMessage = formArea.querySelector('.emailoctopus-success-message');
+    function isActuallyVisible(el) {
+        if (!el) return false;
 
-        if (successMessage && successMessage.offsetParent !== null) {
+        let current = el;
+
+        while (current) {
+            const style = window.getComputedStyle(current);
+
+            if (
+                style.display === 'none' ||
+                style.visibility === 'hidden' ||
+                parseFloat(style.opacity) === 0
+            ) {
+                return false;
+            }
+
+            current = current.parentElement;
+        }
+
+        return true;
+    }
+
+    const observer = new MutationObserver(() => {
+        const successMessage = formArea.querySelector(
+            '.emailoctopus-success-message'
+        );
+
+        if (successMessage && isActuallyVisible(successMessage)) {
             modal.classList.add('active');
         }
     });
