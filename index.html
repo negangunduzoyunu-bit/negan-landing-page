@@ -982,20 +982,21 @@
 document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('successModal');
     const closeModal = document.getElementById('closeModal');
+    const formArea = document.getElementById('emailOctopusForm');
 
-    const waitForForm = setInterval(() => {
-        const form = document.querySelector('#emailOctopusForm form.emailoctopus-form');
+    const observer = new MutationObserver(() => {
+        const successMessage = formArea.querySelector('.emailoctopus-success-message');
 
-        if (!form) return;
+        if (successMessage && successMessage.offsetParent !== null) {
+            modal.classList.add('active');
+        }
+    });
 
-        clearInterval(waitForForm);
-
-        form.addEventListener('submit', () => {
-            setTimeout(() => {
-                modal.classList.add('active');
-            }, 500);
-        });
-    }, 100);
+    observer.observe(formArea, {
+        childList: true,
+        subtree: true,
+        attributes: true
+    });
 
     closeModal.addEventListener('click', () => {
         modal.classList.remove('active');
