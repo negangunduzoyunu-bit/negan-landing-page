@@ -856,6 +856,13 @@
                         </div>
                         <button type="submit">Ücretsiz Kitabı Gönder</button>
                     </form>
+                    <div id="emailOctopusHidden" style="display:none;">
+    <script
+        async
+        src="https://eomail5.com/form/aca3624e-86ee-11f1-8ee2-b5261cd40863.js"
+        data-form="aca3624e-86ee-11f1-8ee2-b5261cd40863">
+    </script>
+</div>
                 </div>
 
                 <div class="trust-text">
@@ -943,38 +950,25 @@
                 emailInput.value = emailInput.value.replace(/\s/g, '');
             });
 
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                
-                const email = emailInput.value.trim();
-                if (!email) return;
+           form.addEventListener('submit', (e) => {
+    e.preventDefault();
 
-                submitBtn.disabled = true;
-                const originalBtnText = submitBtn.textContent;
-                submitBtn.textContent = 'Gönderiliyor...';
+    const email = emailInput.value.trim();
+    if (!email) return;
 
-                try {
-                    const response = await fetch('/.netlify/functions/subscribe', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({ email: email })
-                    });
+    const eoForm = document.querySelector('#emailOctopusHidden form.emailoctopus-form');
+    const eoEmail = document.querySelector('#emailOctopusHidden input[type="email"]');
 
-                    if (response.ok) {
-                        modal.classList.add('active');
-                    } else {
-                        const errorData = await response.json().catch(() => ({}));
-                        throw new Error(errorData.message || 'Bir hata oluştu. Lütfen tekrar deneyin.');
-                    }
-                } catch (error) {
-                    alert(error.message);
-                } finally {
-                    submitBtn.disabled = false;
-                    submitBtn.textContent = originalBtnText;
-                }
-            });
+    if (!eoForm || !eoEmail) {
+        alert('Form yükleniyor. Lütfen birkaç saniye sonra tekrar dene.');
+        return;
+    }
+
+    eoEmail.value = email;
+    eoForm.requestSubmit();
+
+    modal.classList.add('active');
+});
 
             closeModal.addEventListener('click', () => {
                 modal.classList.remove('active');
