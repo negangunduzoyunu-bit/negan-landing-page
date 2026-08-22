@@ -830,12 +830,77 @@
                 font-size: 15px;
             }
         }
+#emailOctopusForm {
+    width: 100%;
+    max-width: 540px;
+    margin-bottom: 16px;
+}
+
+#emailOctopusForm .emailoctopus-form-wrapper {
+    width: 100% !important;
+}
+
 #emailOctopusForm .main-form {
-    display: grid !important;
-    grid-template-columns: 1fr auto !important;
+    display: flex !important;
     gap: 12px !important;
     width: 100% !important;
     align-items: stretch !important;
+}
+
+#emailOctopusForm [eo-form-fields-container] {
+    flex: 1 !important;
+}
+
+#emailOctopusForm .emailoctopus-form-row {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+#emailOctopusForm input[type="email"] {
+    width: 100% !important;
+    padding: 18px 24px !important;
+    background-color: rgba(18, 18, 18, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    border-radius: 8px !important;
+    color: var(--text-pure) !important;
+    font-size: 15px !important;
+    font-weight: 400 !important;
+    outline: none !important;
+    height: auto !important;
+}
+
+#emailOctopusForm input[type="email"]::placeholder {
+    color: #505050 !important;
+}
+
+#emailOctopusForm input[type="submit"] {
+    width: auto !important;
+    padding: 18px 32px !important;
+    background: linear-gradient(135deg, var(--primary) 0%, #5c0a21 100%) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 8px !important;
+    color: var(--text-pure) !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    letter-spacing: 0.5px !important;
+    cursor: pointer !important;
+    white-space: nowrap !important;
+    box-shadow: 0 4px 20px rgba(128, 15, 47, 0.25) !important;
+}
+
+#emailOctopusForm *:has(> a[href*="emailoctopus"]) {
+    display: none !important;
+}
+
+@media (max-width: 576px) {
+    #emailOctopusForm .main-form {
+        flex-direction: column !important;
+        gap: 12px !important;
+    }
+
+    #emailOctopusForm input[type="submit"] {
+        width: 100% !important;
+    }
 }
 
 #emailOctopusForm [eo-form-fields-container] {
@@ -984,35 +1049,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeModal = document.getElementById('closeModal');
     const formArea = document.getElementById('emailOctopusForm');
 
-    function isActuallyVisible(el) {
-        if (!el) return false;
+    let submitted = false;
 
-        let current = el;
-
-        while (current) {
-            const style = window.getComputedStyle(current);
-
-            if (
-                style.display === 'none' ||
-                style.visibility === 'hidden' ||
-                parseFloat(style.opacity) === 0
-            ) {
-                return false;
-            }
-
-            current = current.parentElement;
-        }
-
-        return true;
-    }
+    formArea.addEventListener('submit', () => {
+        submitted = true;
+    }, true);
 
     const observer = new MutationObserver(() => {
-        const successMessage = formArea.querySelector(
+        if (!submitted) return;
+
+        const success = formArea.querySelector(
             '.emailoctopus-success-message'
         );
 
-        if (successMessage && isActuallyVisible(successMessage)) {
+        if (
+            success &&
+            success.textContent.includes('Please check your inbox')
+        ) {
             modal.classList.add('active');
+            submitted = false;
         }
     });
 
@@ -1023,14 +1078,38 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     closeModal.addEventListener('click', () => {
-        modal.classList.remove('active');
-    });
+    modal.classList.remove('active');
+
+    const eoForm = formArea.querySelector('form.emailoctopus-form');
+    const successMessage = formArea.querySelector('.emailoctopus-success-message');
+
+    if (eoForm) {
+        eoForm.style.display = '';
+        eoForm.reset();
+    }
+
+    if (successMessage) {
+        successMessage.style.display = 'none';
+    }
+});
 
     modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-            modal.classList.remove('active');
+    if (e.target === modal) {
+        modal.classList.remove('active');
+
+        const eoForm = formArea.querySelector('form.emailoctopus-form');
+        const successMessage = formArea.querySelector('.emailoctopus-success-message');
+
+        if (eoForm) {
+            eoForm.style.display = '';
+            eoForm.reset();
         }
-    });
+
+        if (successMessage) {
+            successMessage.style.display = 'none';
+        }
+    }
+});
 });
 </script>
 </body>
